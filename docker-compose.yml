@@ -1,0 +1,40 @@
+services:
+
+    postgis:
+        image: postgis/postgis:12-3.4
+        ports:
+          - 5432:5432
+        environment:
+            POSTGRES_DB: indexing
+            POSTGRES_PASSWORD: password
+            PGPASSWORD: password
+        volumes:
+            - postgis-volume:/var/lib/postgresql/data
+        networks:
+            - postgis-network
+
+    osm2pgsql:
+        image: iboates/osm2pgsql:latest
+        environment:
+            POSTGRES_PASSWORD: password
+            PGPASSWORD: password
+        command:
+            - /data/map.xml
+            - --database=indexing
+            - --verbose
+            - --user=postgres
+            - --host=postgis
+            - --port=5432
+            - --input-reader=xml
+        networks:
+            - postgis-network
+        volumes:
+          - ./data:/data
+        depends_on:
+          - postgis
+
+volumes:
+    postgis-volume: {}
+
+networks:
+    postgis-network: {}
