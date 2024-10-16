@@ -18,12 +18,12 @@ FROM planet_osm_point
 WHERE name IS NOT NULL
   AND st_within(way, (SELECT way FROM planet_osm_polygon WHERE name = 'Математико-механический факультет СПбГУ'));
 
--- 4) Получаем локации, которые содержатся в Старом Петергофе
+-- 4) Получаем локации, которые пересекаются с Петергофом
 EXPLAIN ANALYSE
 SELECT osm_id, name
 FROM planet_osm_polygon
 WHERE name IS NOT NULL
-  AND st_contains((SELECT way FROM planet_osm_polygon WHERE name = 'Петергоф'), way);
+  AND st_intersects((SELECT way FROM planet_osm_polygon WHERE name = 'Петергоф'), way);
 
 -- 5) Создаем индексы
 CREATE INDEX IF NOT EXISTS planet_osm_point_way_idx ON planet_osm_point USING GIST (way);
